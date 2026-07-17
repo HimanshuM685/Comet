@@ -4,10 +4,12 @@ export function createCommit(message: string): boolean {
   try {
     execFileSync("git", ["commit", "-m", message], {
       encoding: "utf-8",
+      stdio: "pipe",
     });
     return true;
-  } catch {
-    return false;
+  } catch (error: any) {
+    const stderr = error.stderr || error.message || "Unknown error";
+    throw new Error(`Git commit failed: ${stderr}`);
   }
 }
 
