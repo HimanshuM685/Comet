@@ -1,0 +1,52 @@
+{
+  "name": "ai-commit",
+  "version": "1.0.0",
+  "description": "AI-powered commit message generator CLI",
+  "main": "dist/index.js",
+  "bin": {
+    "aicommit": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "git",
+    "commit",
+    "ai",
+    "cli",
+    "gemini",
+    "openai",
+    "commit-message"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.7",
+    "figlet": "^1.8.0",
+    "inquirer": "^8.2.6",
+    "node-fetch": "^2.7.0",
+    "ora": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/cli-table3": "^0.6.5",
+    "@types/figlet": "^1.7.0",
+    "@types/inquirer": "^8.2.10",
+    "@types/node": "^20.14.0",
+    "@types/node-fetch": "^2.6.11",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
