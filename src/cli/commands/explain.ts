@@ -10,6 +10,7 @@ import { logger } from "../../utils/logger";
 import { confirmAction } from "../prompts/confirm";
 import { AIContext } from "../../types/commit";
 import { getCurrentBranch, getRepoName } from "../../git/branch";
+import { ensureApiKey } from "../../utils/env";
 import { EMOJIS } from "../../constants/emojis";
 
 export async function explainCommand(): Promise<void> {
@@ -45,6 +46,8 @@ export async function explainCommand(): Promise<void> {
     });
 
     const prompt = buildExplainPrompt(context);
+
+    await ensureApiKey();
 
     const response = await withSpinner("AI is analyzing changes", async () => {
       return generateAIResponse(prompt);

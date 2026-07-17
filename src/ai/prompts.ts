@@ -1,7 +1,22 @@
 import { AIContext } from "../types/commit";
 import { PROMPTS } from "../constants/prompts";
 
-export function buildCommitPrompt(context: AIContext, count: number): string {
+const MAX_DIFF_LENGTH = 10000;
+
+function truncateDiff(diff: string): string {
+  if (diff.length <= MAX_DIFF_LENGTH) return diff;
+  return (
+    diff.substring(0, MAX_DIFF_LENGTH) +
+    "\n\n[... diff truncated due to size ...]"
+  );
+}
+
+export function buildCommitPrompt(
+  context: AIContext,
+  count: number,
+  maxLength: number = 72,
+  language: string = "en"
+): string {
   return PROMPTS.commit
     .replace("{repository}", context.repository)
     .replace("{branch}", context.branch)
@@ -15,8 +30,10 @@ export function buildCommitPrompt(context: AIContext, count: number): string {
         .map((f) => `  - [${f.status}] ${f.path}`)
         .join("\n")
     )
-    .replace("{diff}", context.diff)
-    .replace("{count}", count.toString());
+    .replace("{diff}", truncateDiff(context.diff))
+    .replace("{count}", count.toString())
+    .replace("{max_length}", String(maxLength))
+    .replace("{language}", language);
 }
 
 export function buildReviewPrompt(context: AIContext): string {
@@ -27,7 +44,7 @@ export function buildReviewPrompt(context: AIContext): string {
         .map((f) => `  - [${f.status}] ${f.path}`)
         .join("\n")
     )
-    .replace("{diff}", context.diff);
+    .replace("{diff}", truncateDiff(context.diff));
 }
 
 export function buildExplainPrompt(context: AIContext): string {
@@ -38,9 +55,9 @@ export function buildExplainPrompt(context: AIContext): string {
         .map((f) => `  - [${f.status}] ${f.path}`)
         .join("\n")
     )
-    .replace("{diff}", context.diff);
+    .replace("{diff}", truncateDiff(context.diff));
 }
 
 export function buildRefactorPrompt(diff: string): string {
-  return PROMPTS.refactor.replace("{diff}", diff);
+  return PROMPTS.refactor.replace("{diff}", truncateDiff(diff));
 }

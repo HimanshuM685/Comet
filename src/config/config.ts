@@ -46,7 +46,13 @@ export function resetConfig(): Config {
 }
 
 export function getEffectiveProvider(): AIProvider {
+  const envProvider = process.env.AI_PROVIDER;
+  if (envProvider) {
+    if (envProvider !== 'gemini' && envProvider !== 'openai') {
+      throw new Error(`Invalid AI_PROVIDER: '${envProvider}'. Must be 'gemini' or 'openai'.`);
+    }
+    return envProvider;
+  }
   const config = loadConfig();
-  const envProvider = process.env.AI_PROVIDER as AIProvider | undefined;
-  return envProvider || config.provider;
+  return config.provider;
 }

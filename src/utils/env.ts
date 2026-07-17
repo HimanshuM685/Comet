@@ -1,7 +1,25 @@
 import * as dotenv from "dotenv";
+import * as path from "path";
+import * as fs from "fs";
+import inquirer from "inquirer";
 import { AIProvider } from "../types/config";
+import { loadConfig } from "../config/config";
+import { getConfigDir } from "./files";
 
 dotenv.config();
+
+function getEnvFilePath(): string {
+  return path.join(getConfigDir(), ".env");
+}
+
+function loadLocalEnv(): void {
+  const envPath = getEnvFilePath();
+  if (fs.existsSync(envPath)) {
+    dotenv.config({ path: envPath });
+  }
+}
+
+loadLocalEnv();
 
 export function getEnvVar(name: string): string | undefined {
   return process.env[name];
@@ -33,11 +51,75 @@ export function getProviderFromEnv(): AIProvider | undefined {
   return undefined;
 }
 
-export function getApiKeyForProvider(provider: AIProvider): string {
-  switch (provider) {
-    case "gemini":
-      return requireEnvVar("GEMINI_API_KEY");
-    case "openai":
-      return requireEnvVar("OPENAI_API_KEY");
+export function saveApiKeyToEnv(provider: AIProvider, apiKey: string): void {
+  const envPath = getEnvFilePath();
+  const configDir = getConfigDir();
+
+  if (!fs.existsSync(configDir)) {
+    fs.mkdirSync(configDir, { recursive: true });
   }
+
+  let envContent = "";
+  if (fs.existsSync(envPath)) {
+    envContent = fs.readFileSync(envPath, "utf-8");
+  }
+
+  const envVarName = provider === "gemini" ? "GEMINI_API_KEY" : "OPENAI_API_KEY";
+  const regex = new RegExp(`^${envVarName}=.*$`, "m");
+
+  if (regex.test(envContent)) {
+    envContent = envContent.replace(regex, `${envVarName}=${apiKey}`);
+  } else {
+    envContent = envContent.trim() + `\n${envVarName}=${apiKey}\n`;
+  }
+
+  fs.writeFileSync(envPath, envContent.trim() + "\n", "utf-8");
+  process.env[envVarName] = apiKey;
+}
+
+export function getApiKeyForProvider(provider: AIProvider): string {
+  const envVarName = provider === "gemini" ? "GEMINI_API_KEY" : "OPENAI_API_KEY";
+  const key = process.env[envVarName];
+  if (key) return key;
+
+  loadLocalEnv();
+  if (process.env[envVarName]) return process.env[envVarName]!;
+
+  throw new Error(`Missing ${envVarName}. Run 'aicommit config' to set it.`);
+}
+
+export async function ensureApiKey(): Promise<void> {
+  const config = loadConfig();
+  const provider = config.provider;
+  const envVarName = provider === "gemini" ? "GEMINI_API_KEY" : "OPENAI_API_KEY";
+
+  if (process.env[envVarName]) return;
+
+  loadLocalEnv();
+  if (process.env[envVarName]) return;
+
+  const providerLabel = provider === "gemini" ? "Gemini" : "OpenAI";
+  const keyUrl =
+    provider === "gemini"
+      ? "https://aistudio.google.com/apikey"
+      : "https://platform.openai.com/api-keys";
+
+  console.log(`\nNo ${providerLabel} API key found.`);
+  console.log(`Get one at: ${keyUrl}\n`);
+
+  const { apiKey } = await inquirer.prompt([
+    {
+      type: "password",
+      name: "apiKey",
+      message: `Enter your ${providerLabel} API key:`,
+      mask: "*",
+      validate: (input: string) => {
+        if (input.trim().length === 0) return "API key cannot be empty";
+        return true;
+      },
+    },
+  ]);
+
+  saveApiKeyToEnv(provider, apiKey.trim());
+  console.log(`\nAPI key saved to ${getEnvFilePath()}\n`);
 }

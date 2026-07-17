@@ -1,9 +1,10 @@
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { ChangedFile, FileStatus } from "../types/commit";
+import { FILE_STATUS_MAP } from "../constants/git";
 
 export function getChangedFiles(): ChangedFile[] {
   try {
-    const output = execSync("git diff --name-status HEAD~1", {
+    const output = execFileSync("git", ["diff", "--name-status", "HEAD~1"], {
       encoding: "utf-8",
     }).trim();
 
@@ -14,7 +15,7 @@ export function getChangedFiles(): ChangedFile[] {
       const filePath = pathParts.join(" ");
       return {
         path: filePath,
-        status: mapStatus(status),
+        status: (FILE_STATUS_MAP[status] || "unknown") as FileStatus,
       };
     });
   } catch {
@@ -24,7 +25,7 @@ export function getChangedFiles(): ChangedFile[] {
 
 export function getFileContent(filePath: string): string | null {
   try {
-    return execSync(`git show HEAD:${filePath}`, {
+    return execFileSync("git", ["show", `HEAD:${filePath}`], {
       encoding: "utf-8",
     });
   } catch {
@@ -34,23 +35,10 @@ export function getFileContent(filePath: string): string | null {
 
 export function getDiffForFile(filePath: string): string {
   try {
-    return execSync(`git diff --cached -- "${filePath}"`, {
+    return execFileSync("git", ["diff", "--cached", "--", filePath], {
       encoding: "utf-8",
     }).trim();
   } catch {
     return "";
-  }
-}
-
-function mapStatus(status: string): FileStatus {
-  switch (status) {
-    case "A":
-      return "added";
-    case "D":
-      return "deleted";
-    case "R":
-      return "renamed";
-    default:
-      return "modified";
   }
 }

@@ -4,7 +4,7 @@ export function parseCommitSuggestions(
   rawResponse: string
 ): CommitSuggestion[] {
   try {
-    const jsonMatch = rawResponse.match(/\[[\s\S]*\]/);
+    const jsonMatch = rawResponse.match(/\[[\s\S]*?\]/);
     if (!jsonMatch) {
       throw new Error("No JSON array found in response");
     }
@@ -39,34 +39,29 @@ export function parseCommitSuggestions(
   }
 }
 
-export function parseReviewResponse(rawResponse: string): unknown {
+export function parseJsonObjectResponse(
+  rawResponse: string
+): Record<string, any> | null {
   try {
-    const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
+    const jsonMatch = rawResponse.match(/\{[\s\S]*?\}/);
     if (!jsonMatch) {
       throw new Error("No JSON object found in response");
     }
     return JSON.parse(jsonMatch[0]);
   } catch (error) {
     throw new Error(
-      `Failed to parse review response: ${
+      `Failed to parse JSON object response: ${
         error instanceof Error ? error.message : "Unknown error"
       }`
     );
   }
 }
 
+// Backwards-compatible aliases
+export function parseReviewResponse(rawResponse: string): unknown {
+  return parseJsonObjectResponse(rawResponse);
+}
+
 export function parseExplainResponse(rawResponse: string): unknown {
-  try {
-    const jsonMatch = rawResponse.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error("No JSON object found in response");
-    }
-    return JSON.parse(jsonMatch[0]);
-  } catch (error) {
-    throw new Error(
-      `Failed to parse explain response: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`
-    );
-  }
+  return parseJsonObjectResponse(rawResponse);
 }

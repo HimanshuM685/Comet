@@ -10,6 +10,7 @@ import { showBanner } from "../ui/banner";
 import { logger } from "../../utils/logger";
 import { confirmAction } from "../prompts/confirm";
 import { printTable } from "../ui/table";
+import { ensureApiKey } from "../../utils/env";
 import { AIContext } from "../../types/commit";
 import { getCurrentBranch, getRepoName } from "../../git/branch";
 
@@ -46,6 +47,8 @@ export async function reviewCommand(): Promise<void> {
     });
 
     const prompt = buildReviewPrompt(context);
+
+    await ensureApiKey();
 
     const response = await withSpinner("AI is reviewing code", async () => {
       return generateAIResponse(prompt);

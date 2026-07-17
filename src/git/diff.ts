@@ -1,11 +1,10 @@
-import { execSync } from "child_process";
-import { GIT } from "../constants/git";
+import { execFileSync } from "child_process";
 import { ChangedFile, FileStatus } from "../types/commit";
 import { FILE_STATUS_MAP } from "../constants/git";
 
 export function getStagedDiff(): string {
   try {
-    return execSync(`git ${GIT.STAGED_DIFF_CMD}`, {
+    return execFileSync("git", ["diff", "--cached"], {
       encoding: "utf-8",
       maxBuffer: 10 * 1024 * 1024,
     }).trim();
@@ -16,7 +15,7 @@ export function getStagedDiff(): string {
 
 export function getStagedDiffStat(): string {
   try {
-    return execSync(`git ${GIT.DIFF_CMD}`, {
+    return execFileSync("git", ["diff", "--cached", "--stat"], {
       encoding: "utf-8",
     }).trim();
   } catch {
@@ -26,8 +25,9 @@ export function getStagedDiffStat(): string {
 
 export function getStagedFiles(): ChangedFile[] {
   try {
-    const output = execSync(
-      `git diff --cached --name-status`,
+    const output = execFileSync(
+      "git",
+      ["diff", "--cached", "--name-status"],
       { encoding: "utf-8" }
     ).trim();
 

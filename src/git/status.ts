@@ -1,6 +1,8 @@
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { ChangedFile, FileStatus, GitStatus } from "../types/commit";
 import { FILE_STATUS_MAP } from "../constants/git";
+import { getCurrentBranch } from "./branch";
+import { stageAll } from "./commit";
 
 function parseStatusOutput(output: string): ChangedFile[] {
   if (!output.trim()) return [];
@@ -26,7 +28,7 @@ export function getGitStatus(): GitStatus {
 
 function parseStagedStatus(): ChangedFile[] {
   try {
-    const output = execSync("git diff --cached --name-status", {
+    const output = execFileSync("git", ["diff", "--cached", "--name-status"], {
       encoding: "utf-8",
     });
     return parseStatusOutput(output);
@@ -37,7 +39,7 @@ function parseStagedStatus(): ChangedFile[] {
 
 function parseModifiedStatus(): ChangedFile[] {
   try {
-    const output = execSync("git diff --name-status", {
+    const output = execFileSync("git", ["diff", "--name-status"], {
       encoding: "utf-8",
     });
     return parseStatusOutput(output);
@@ -48,7 +50,7 @@ function parseModifiedStatus(): ChangedFile[] {
 
 function parseUntrackedFiles(): string[] {
   try {
-    const output = execSync("git ls-files --others --exclude-standard", {
+    const output = execFileSync("git", ["ls-files", "--others", "--exclude-standard"], {
       encoding: "utf-8",
     });
     return output
@@ -59,19 +61,9 @@ function parseUntrackedFiles(): string[] {
   }
 }
 
-function getCurrentBranch(): string {
-  try {
-    return execSync("git rev-parse --abbrev-ref HEAD", {
-      encoding: "utf-8",
-    }).trim();
-  } catch {
-    return "unknown";
-  }
-}
-
 export function hasStagedChanges(): boolean {
   try {
-    const output = execSync("git diff --cached --name-only", {
+    const output = execFileSync("git", ["diff", "--cached", "--name-only"], {
       encoding: "utf-8",
     }).trim();
     return output.length > 0;
@@ -81,9 +73,7 @@ export function hasStagedChanges(): boolean {
 }
 
 export function stageAllFiles(): void {
-  try {
-    execSync("git add .", { encoding: "utf-8" });
-  } catch {
+  if (!stageAll()) {
     throw new Error("Failed to stage files");
   }
 }

@@ -16,7 +16,7 @@ export function createTable(head: string[]): Table.Table {
       bottom: "─",
       "bottom-mid": "┴",
       "bottom-left": "└",
-      bottomRight: "┘",
+      "bottom-right": "┘",
       left: "│",
       "left-mid": "├",
       mid: "─",

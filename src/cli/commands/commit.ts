@@ -1,21 +1,21 @@
-import { Command } from "commander";
 import chalk from "chalk";
+import { execFileSync } from "child_process";
 import { getStagedDiff, getStagedFiles } from "../../git/diff";
 import { getCurrentBranch, getRecentCommits, getRepoName } from "../../git/branch";
 import { hasStagedChanges, stageAllFiles } from "../../git/status";
 import { createCommit, pushCommits } from "../../git/commit";
 import { generateCommitSuggestions } from "../../ai/provider";
 import { parseCommitSuggestions } from "../../ai/parser";
-import { buildCommitContext } from "../../ai/prompts";
 import { selectCommit } from "../prompts/selectCommit";
 import { confirmAction } from "../prompts/confirm";
 import { withSpinner } from "../ui/spinner";
-import { showBanner } from "../ui/banner";
 import { logger } from "../../utils/logger";
 import { addToHistory } from "../../storage/history";
 import { formatDate } from "../../utils/helpers";
 import { loadConfig } from "../../config/config";
+import { ensureApiKey } from "../../utils/env";
 import { CommitSuggestion, AIContext } from "../../types/commit";
+import { EMOJIS } from "../../constants/emojis";
 
 export interface CommitCommandOptions {
   push?: boolean;
@@ -24,15 +24,15 @@ export interface CommitCommandOptions {
   model?: string;
   count?: string;
   message?: string;
+  yes?: boolean;
+  quiet?: boolean;
 }
 
 export async function commitCommand(options: CommitCommandOptions): Promise<void> {
-  showBanner();
-
-  const config = loadConfig();
-  const count = parseInt(options.count || "3", 10);
-
   try {
+    const config = loadConfig();
+    const count = parseInt(options.count || "3", 10);
+
     if (!hasStagedChanges()) {
       const shouldStage = await confirmAction(
         "No staged changes found. Stage all changes?"
@@ -62,8 +62,10 @@ export async function commitCommand(options: CommitCommandOptions): Promise<void
       };
     });
 
+    await ensureApiKey();
+
     const rawResponse = await withSpinner("Contacting AI", async () => {
-      return generateCommitSuggestions(context, count);
+      return generateCommitSuggestions(context, count, options.provider as any);
     });
 
     const suggestions = parseCommitSuggestions(rawResponse);
@@ -82,26 +84,47 @@ export async function commitCommand(options: CommitCommandOptions): Promise<void
         description: "User-provided message",
       };
     } else {
-      logger.blank();
-      logger.bold("Suggested Commits:");
-      logger.blank();
+      if (!options.quiet) {
+        logger.blank();
+        logger.bold("Suggested Commits:");
+        logger.blank();
+      }
       selected = await selectCommit(suggestions);
     }
 
+    // Apply emoji prefix if enabled in config
+    if (config.emoji) {
+      const emoji = EMOJIS[selected.type as keyof typeof EMOJIS];
+      if (emoji && !selected.message.startsWith(emoji)) {
+        selected.message = `${emoji} ${selected.message}`;
+      }
+    }
+
+    // Enforce max length from config
+    if (config.maxLength && selected.message.length > config.maxLength) {
+      selected.message = selected.message.substring(0, config.maxLength);
+    }
+
     if (options.dryRun) {
-      logger.blank();
-      logger.info("Dry run - commit message:");
+      if (!options.quiet) {
+        logger.blank();
+        logger.info("Dry run - commit message:");
+      }
       logger.bold(selected.message);
       return;
     }
 
-    const shouldCommit = await confirmAction(
-      `Commit with message: "${selected.message}"?`
-    );
+    // Skip confirmation if --yes flag or autoCommit config is set
+    const skipConfirm = options.yes || config.autoCommit;
+    if (!skipConfirm) {
+      const shouldCommit = await confirmAction(
+        `Commit with message: "${selected.message}"?`
+      );
 
-    if (!shouldCommit) {
-      logger.warn("Commit cancelled.");
-      return;
+      if (!shouldCommit) {
+        logger.warn("Commit cancelled.");
+        return;
+      }
     }
 
     const committed = await withSpinner("Creating commit", async () => {
@@ -113,15 +136,22 @@ export async function commitCommand(options: CommitCommandOptions): Promise<void
       return;
     }
 
+    // Resolve actual commit SHA
+    const sha = execFileSync("git", ["rev-parse", "HEAD"], {
+      encoding: "utf-8",
+    }).trim();
+
     addToHistory({
       date: formatDate(new Date()),
       message: selected.message,
       branch: context.branch,
-      hash: "HEAD",
+      hash: sha,
     });
 
-    logger.blank();
-    logger.success(`Committed: ${chalk.white(selected.message)}`);
+    if (!options.quiet) {
+      logger.blank();
+      logger.success(`Committed: ${chalk.white(selected.message)}`);
+    }
 
     if (options.push) {
       const pushed = await withSpinner("Pushing to remote", async () => {

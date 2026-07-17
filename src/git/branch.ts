@@ -1,8 +1,8 @@
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 
 export function getCurrentBranch(): string {
   try {
-    return execSync("git rev-parse --abbrev-ref HEAD", {
+    return execFileSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
       encoding: "utf-8",
     }).trim();
   } catch {
@@ -12,7 +12,7 @@ export function getCurrentBranch(): string {
 
 export function getRecentCommits(count: number = 10): string[] {
   try {
-    const output = execSync(`git log --oneline -${count}`, {
+    const output = execFileSync("git", ["log", "--oneline", `-${count}`], {
       encoding: "utf-8",
     }).trim();
 
@@ -25,7 +25,7 @@ export function getRecentCommits(count: number = 10): string[] {
 
 export function getRepoName(): string {
   try {
-    const remoteUrl = execSync("git remote get-url origin", {
+    const remoteUrl = execFileSync("git", ["remote", "get-url", "origin"], {
       encoding: "utf-8",
     }).trim();
     const match = remoteUrl.match(/[:/]([^/]+\/[^/]+?)(?:\.git)?$/);
@@ -37,7 +37,7 @@ export function getRepoName(): string {
 
 export function isGitRepo(): boolean {
   try {
-    execSync("git rev-parse --is-inside-work-tree", {
+    execFileSync("git", ["rev-parse", "--is-inside-work-tree"], {
       encoding: "utf-8",
     });
     return true;

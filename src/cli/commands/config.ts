@@ -5,6 +5,7 @@ import { showBanner } from "../ui/banner";
 import { logger } from "../../utils/logger";
 import { printTable } from "../ui/table";
 import { AIProvider } from "../../types/config";
+import { saveApiKeyToEnv } from "../../utils/env";
 
 export async function configCommand(): Promise<void> {
   showBanner();
@@ -18,6 +19,7 @@ export async function configCommand(): Promise<void> {
       message: "What would you like to do?",
       choices: [
         { name: "View current config", value: "view" },
+        { name: "Set API key", value: "apikey" },
         { name: "Set provider (gemini/openai)", value: "provider" },
         { name: "Toggle emoji prefix", value: "emoji" },
         { name: "Toggle auto-commit", value: "autoCommit" },
@@ -32,11 +34,20 @@ export async function configCommand(): Promise<void> {
       logger.blank();
       logger.bold("Current Configuration:");
       logger.blank();
+      const keyStatus =
+        config.provider === "gemini"
+          ? process.env.GEMINI_API_KEY
+            ? "Set"
+            : "Not set"
+          : process.env.OPENAI_API_KEY
+            ? "Set"
+            : "Not set";
       printTable(
         ["Key", "Value"],
         [
           ["Provider", config.provider],
           ["Model", config.model],
+          ["API Key", keyStatus],
           ["Emoji", config.emoji ? "ON" : "OFF"],
           ["Auto-commit", config.autoCommit ? "ON" : "OFF"],
           ["Theme", config.theme],
@@ -44,6 +55,38 @@ export async function configCommand(): Promise<void> {
           ["Language", config.language],
         ]
       );
+      break;
+    }
+
+    case "apikey": {
+      const { provider } = await inquirer.prompt([
+        {
+          type: "list",
+          name: "provider",
+          message: "Which provider's key do you want to set?",
+          choices: [
+            { name: "Gemini", value: "gemini" },
+            { name: "OpenAI", value: "openai" },
+          ],
+        },
+      ]);
+      const keyUrl =
+        provider === "gemini"
+          ? "https://aistudio.google.com/apikey"
+          : "https://platform.openai.com/api-keys";
+      logger.info(`Get your key at: ${keyUrl}`);
+      const { apiKey } = await inquirer.prompt([
+        {
+          type: "password",
+          name: "apiKey",
+          message: `Enter your ${provider} API key:`,
+          mask: "*",
+          validate: (input: string) =>
+            input.trim().length > 0 || "API key cannot be empty",
+        },
+      ]);
+      saveApiKeyToEnv(provider as AIProvider, apiKey.trim());
+      logger.success(`${provider} API key saved!`);
       break;
     }
 

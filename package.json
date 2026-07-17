@@ -38,11 +38,11 @@
     "ora": "^5.4.1"
   },
   "devDependencies": {
-    "@types/cli-table3": "^0.6.5",
     "@types/figlet": "^1.7.0",
     "@types/inquirer": "^8.2.10",
     "@types/node": "^20.14.0",
     "@types/node-fetch": "^2.6.11",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.0",
     "vitest": "^2.0.0"
   },

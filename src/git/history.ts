@@ -1,10 +1,12 @@
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { CommitHistoryEntry } from "../types/commit";
+import { getCurrentBranch } from "./branch";
 
 export function getCommitHistory(count: number = 20): CommitHistoryEntry[] {
   try {
-    const output = execSync(
-      `git log --oneline -${count} --format="%H|%s|%ai"`,
+    const output = execFileSync(
+      "git",
+      ["log", "--oneline", `-${count}`, "--format=%H|%s|%ai"],
       { encoding: "utf-8" }
     ).trim();
 
@@ -35,14 +37,4 @@ export function getFilteredHistory(
       entry.message.toLowerCase().includes(lowerSearch) ||
       entry.branch.toLowerCase().includes(lowerSearch)
   );
-}
-
-function getCurrentBranch(): string {
-  try {
-    return execSync("git rev-parse --abbrev-ref HEAD", {
-      encoding: "utf-8",
-    }).trim();
-  } catch {
-    return "unknown";
-  }
 }

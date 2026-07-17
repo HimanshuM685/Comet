@@ -20,6 +20,7 @@ export function readJsonFile<T>(filePath: string): T | null {
 export function writeJsonFile<T>(filePath: string, data: T): void {
   ensureDirectoryExists(path.dirname(filePath));
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+  fs.chmodSync(filePath, 0o600);
 }
 
 export function appendJsonFile<T>(filePath: string, data: T): void {
@@ -42,6 +43,9 @@ export function readFile(filePath: string): string | null {
 }
 
 export function getConfigDir(): string {
-  const home = process.env.HOME || process.env.USERPROFILE || "";
-  return path.join(home, ".aicommit");
+  const home = process.env.HOME || process.env.USERPROFILE;
+  if (!home) {
+    throw new Error('HOME or USERPROFILE environment variable is not set');
+  }
+  return path.join(home, '.comet');
 }
