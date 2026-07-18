@@ -1,58 +1,106 @@
 # Comet
 
-AI-powered commit message generator CLI. Reads your staged git changes, understands the context, and generates Conventional Commits messages using Gemini or OpenAI.
+> AI-powered commit message generator that reads your staged Git diffs and generates clean, Conventional Commits messages using Gemini or OpenAI.
+
+<p align="center">
+  <img src="https://img.shields.io/npm/v/@koushikmondal06/comet?color=blue" alt="npm version" />
+  <img src="https://img.shields.io/npm/dm/@koushikmondal06/comet" alt="downloads" />
+  <img src="https://img.shields.io/npm/l/@koushikmondal06/comet" alt="license" />
+  <img src="https://img.shields.io/badge/node-%3E%3D16-green" alt="node version" />
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Koushikmondal06/Comet/main/docs/comet-demo.gif" alt="Comet Demo" width="700" />
+</p>
+
+---
+
+## Why Comet?
+
+Writing good commit messages takes time. Comet reads your staged changes, understands the context, and gives you multiple suggestions to pick from — all in the Conventional Commits format with optional emoji prefixes.
+
+---
 
 ## Features
 
-- Generate commit messages from staged diffs
-- Interactive selection from multiple suggestions
-- Code review of staged changes
-- Plain English explanation of changes
-- Commit history tracking
-- Gemini and OpenAI support
-- Conventional Commits format with emoji prefixes
+- **Smart commit messages** from staged diffs
+- **Multiple suggestions** — pick the best one
+- **Code review** — get AI feedback on your staged changes
+- **Explain changes** — plain English summary of what changed
+- **Refactor suggestions** — AI-powered improvement ideas
+- **Commit history** — browse and search past commits
+- **Gemini & OpenAI** support
+- **Emoji prefixes** — optional Conventional Commits + emoji
+- **Lightweight** — zero config, works out of the box
+
+---
 
 ## Install
 
 ```bash
-npm install -g ai-commit
+npm install -g @koushikmondal06/comet
 ```
+
+---
 
 ## Quick Start
 
 ```bash
-# Set your API key
+# 1. Set your API key (Gemini or OpenAI)
 export GEMINI_API_KEY=your_key_here
 
-# Stage changes
+# 2. Stage your changes
 git add .
 
-# Generate commit
+# 3. Generate a commit
 comet
 
-# Commit and push
+# 4. Or commit and push in one go
 comet --push
 ```
+
+---
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `comet` | Generate commit message |
-| `comet --push` | Commit and push |
-| `comet --dry-run` | Show suggestions only |
-| `comet review` | AI code review |
-| `comet explain` | Explain changes in plain English |
+| `comet` | Generate and create an AI-powered commit |
+| `comet --push` | Commit and push to remote |
+| `comet --dry-run` | Show suggestions without committing |
+| `comet -m "msg"` | Skip selection, use provided message |
+| `comet review` | AI code review of staged changes |
+| `comet explain` | Explain staged changes in plain English |
+| `comet refactor` | Get AI refactoring suggestions |
 | `comet config` | Configure settings |
-| `comet history` | View commit history |
+| `comet history` | View and search commit history |
+| `comet history --clear` | Clear commit history |
+
+### Options
+
+| Flag | Description |
+|------|-------------|
+| `-p, --push` | Push after commit |
+| `-d, --dry-run` | Show suggestions only |
+| `-m, --message <msg>` | Use this message directly |
+| `-n, --count <n>` | Number of suggestions (default: 3) |
+| `-y, --yes` | Auto-confirm (skip prompts) |
+| `-q, --quiet` | Suppress non-essential output |
+| `--provider <name>` | AI provider: `gemini` or `openai` |
+| `--model <name>` | Specific AI model to use |
+| `--no-banner` | Suppress the ASCII banner |
+
+---
 
 ## Configuration
+
+Run the interactive config wizard:
 
 ```bash
 comet config
 ```
 
-Or edit `~/.comet/config.json`:
+Or manually edit `~/.comet/config.json`:
 
 ```json
 {
@@ -64,23 +112,78 @@ Or edit `~/.comet/config.json`:
 }
 ```
 
+### Supported Providers
+
+| Provider | API Key | Free Tier |
+|----------|---------|-----------|
+| **Google Gemini** | `GEMINI_API_KEY` | Yes |
+| **OpenAI** | `OPENAI_API_KEY` | No |
+
+Get a Gemini API key for free at [Google AI Studio](https://aistudio.google.com/apikey).
+
+---
+
 ## Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `GEMINI_API_KEY` | Google Gemini API key |
-| `OPENAI_API_KEY` | OpenAI API key |
-| `AI_PROVIDER` | Default provider (gemini/openai) |
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `GEMINI_API_KEY` | Google Gemini API key | Yes (for Gemini) |
+| `OPENAI_API_KEY` | OpenAI API key | Yes (for OpenAI) |
+| `AI_PROVIDER` | Default provider (`gemini` / `openai`) | No |
+
+---
+
+## Examples
+
+```bash
+# Generate with Gemini (default)
+export GEMINI_API_KEY=your_key
+git add .
+comet
+
+# Use OpenAI instead
+export OPENAI_API_KEY=your_key
+comet --provider openai
+
+# Dry run — see suggestions without committing
+comet --dry-run
+
+# Code review
+comet review
+
+# Explain what changed
+comet explain
+
+# Commit and push
+comet --push
+
+# Auto-confirm first suggestion
+comet -y
+```
+
+---
 
 ## Development
 
 ```bash
-git clone https://github.com/your-username/Comet.git
+git clone https://github.com/Koushikmondal06/Comet.git
 cd Comet
 npm install
 npm run dev
 ```
 
+### Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Compile TypeScript |
+| `npm run dev` | Run in development mode |
+| `npm test` | Run tests |
+| `npm run lint` | Lint source files |
+| `npm run typecheck` | Type-check without emitting |
+
+---
+
 ## License
 
-MIT
+[MIT](LICENSE)
