@@ -70,18 +70,18 @@ export async function commitCommand(options: CommitCommandOptions): Promise<void
 
     if (options.chooseModel && !chosenModel) {
       const geminiModels = [
-        { name: "Gemini 2.5 Flash (fast, recommended)", value: "gemini-2.5-flash" },
-        { name: "Gemini 2.5 Pro (most capable)", value: "gemini-2.5-pro" },
-        { name: "Gemini 2.0 Flash", value: "gemini-2.0-flash" },
-        { name: "Gemini 2.0 Flash-Lite", value: "gemini-2.0-flash-lite" },
+        { name: "Gemini 2.5 Flash (fast, free tier)", value: "gemini-2.5-flash" },
+        { name: "Gemini 2.0 Flash (free tier)", value: "gemini-2.0-flash" },
+        { name: "Gemini 2.0 Flash-Lite (free tier)", value: "gemini-2.0-flash-lite" },
+        { name: "Gemini 2.5 Pro (paid only)", value: "gemini-2.5-pro" },
       ];
       const openaiModels = [
-        { name: "GPT-4o (recommended)", value: "gpt-4o" },
         { name: "GPT-4o Mini (fast, cheap)", value: "gpt-4o-mini" },
+        { name: "GPT-4o (recommended)", value: "gpt-4o" },
         { name: "GPT-4 Turbo", value: "gpt-4-turbo" },
         { name: "GPT-3.5 Turbo (cheapest)", value: "gpt-3.5-turbo" },
-        { name: "o1 (reasoning model)", value: "o1" },
-        { name: "o1 Mini (fast reasoning)", value: "o1-mini" },
+        { name: "o1 Mini (reasoning)", value: "o1-mini" },
+        { name: "o1 (reasoning)", value: "o1" },
       ];
       const models = config.provider === "gemini" ? geminiModels : openaiModels;
       const result = await inquirer.prompt([
