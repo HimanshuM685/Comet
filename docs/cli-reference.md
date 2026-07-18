@@ -2,7 +2,7 @@
 
 ## Commands
 
-### `aicommit` (default)
+### `comet` (default)
 Generate AI-powered commit messages.
 
 | Flag | Description |
@@ -14,16 +14,16 @@ Generate AI-powered commit messages.
 | `-n, --count <n>` | Number of suggestions (default: 3) |
 | `-m, --message <msg>` | Skip selection, use this message |
 
-### `aicommit review`
+### `comet review`
 AI-powered code review of staged changes.
 
-### `aicommit explain`
+### `comet explain`
 Explain staged changes in plain English.
 
-### `aicommit config`
+### `comet config`
 Interactive configuration management.
 
-### `aicommit history`
+### `comet history`
 View commit history.
 
 | Flag | Description |
@@ -33,7 +33,7 @@ View commit history.
 
 ## Configuration
 
-Stored in `~/.aicommit/config.json`:
+Stored in `~/.comet/config.json`:
 
 ```json
 {

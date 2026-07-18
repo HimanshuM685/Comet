@@ -28,31 +28,31 @@ export GEMINI_API_KEY=your_key_here
 git add .
 
 # Generate commit
-aicommit
+comet
 
 # Commit and push
-aicommit --push
+comet --push
 ```
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `aicommit` | Generate commit message |
-| `aicommit --push` | Commit and push |
-| `aicommit --dry-run` | Show suggestions only |
-| `aicommit review` | AI code review |
-| `aicommit explain` | Explain changes in plain English |
-| `aicommit config` | Configure settings |
-| `aicommit history` | View commit history |
+| `comet` | Generate commit message |
+| `comet --push` | Commit and push |
+| `comet --dry-run` | Show suggestions only |
+| `comet review` | AI code review |
+| `comet explain` | Explain changes in plain English |
+| `comet config` | Configure settings |
+| `comet history` | View commit history |
 
 ## Configuration
 
 ```bash
-aicommit config
+comet config
 ```
 
-Or edit `~/.aicommit/config.json`:
+Or edit `~/.comet/config.json`:
 
 ```json
 {

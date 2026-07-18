@@ -10,7 +10,7 @@ import { showBanner } from "./ui/banner";
 const program = new Command();
 
 program
-  .name("aicommit")
+  .name("comet")
   .version("1.0.0")
   .description("AI-powered commit message generator")
   .option("--no-banner", "Suppress the ASCII banner");

@@ -46,4 +46,4 @@ User → CLI → Git Module → AI Module → Parser → User Selection → Git 
 1. **Provider abstraction**: Swap between Gemini and OpenAI without changing CLI code
 2. **Template-based prompts**: Prompts in constants, context injected at runtime
 3. **JSON-only AI output**: Forces structured responses for reliable parsing
-4. **Local storage**: Config and history stored in `~/.aicommit/`
+4. **Local storage**: Config and history stored in `~/.comet/`

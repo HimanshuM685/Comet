@@ -85,7 +85,7 @@ export function getApiKeyForProvider(provider: AIProvider): string {
   loadLocalEnv();
   if (process.env[envVarName]) return process.env[envVarName]!;
 
-  throw new Error(`Missing ${envVarName}. Run 'aicommit config' to set it.`);
+  throw new Error(`Missing ${envVarName}. Run 'comet config' to set it.`);
 }
 
 export async function ensureApiKey(): Promise<void> {
