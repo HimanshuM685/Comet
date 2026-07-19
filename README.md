@@ -65,7 +65,8 @@ comet --push
 
 | Command | Description |
 |---------|-------------|
-| `comet` | Generate and create an AI-powered commit |
+| `comet` | Generate and create an AI-powered commit (default command) |
+| `comet commit` | Same as `comet` — generate and create a commit |
 | `comet --push` | Commit and push to remote |
 | `comet --dry-run` | Show suggestions without committing |
 | `comet -m "msg"` | Skip selection, use provided message |
@@ -74,6 +75,7 @@ comet --push
 | `comet refactor` | Get AI refactoring suggestions |
 | `comet config` | Configure settings |
 | `comet history` | View and search commit history |
+| `comet history -s <query>` | Search commit history |
 | `comet history --clear` | Clear commit history |
 
 ### Options
@@ -84,6 +86,7 @@ comet --push
 | `-d, --dry-run` | Show suggestions only |
 | `-m, --message <msg>` | Use this message directly |
 | `-n, --count <n>` | Number of suggestions (default: 3) |
+| `--choose-model` | Interactively pick an AI model before generating |
 | `-y, --yes` | Auto-confirm (skip prompts) |
 | `-q, --quiet` | Suppress non-essential output |
 | `--provider <name>` | AI provider: `gemini` or `openai` |
