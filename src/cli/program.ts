@@ -66,7 +66,7 @@ const program = new Command();
 
 program
   .name("comet")
-  .version("1.0.8")
+  .version("1.0.8", "-v, --version")
   .description("AI-powered commit message generator")
   .option("--no-banner", "Suppress the ASCII banner")
   .helpOption(false);
