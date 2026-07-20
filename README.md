@@ -74,6 +74,7 @@ comet --push
 | `comet explain` | Explain staged changes in plain English |
 | `comet refactor` | Get AI refactoring suggestions |
 | `comet config` | Configure settings |
+| `comet config --api-key [provider]` | Set/change an API key (`gemini` or `openai`) |
 | `comet history` | View and search commit history |
 | `comet history -s <query>` | Search commit history |
 | `comet history --clear` | Clear commit history |

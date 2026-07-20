@@ -71,6 +71,7 @@ function showHelp(): void {
   console.log(`  ${chalk.gray("comet review")}                 ${chalk.gray("# AI code review")}`);
   console.log(`  ${chalk.gray("comet explain")}                ${chalk.gray("# Explain changes in plain English")}`);
   console.log(`  ${chalk.gray("comet config")}                 ${chalk.gray("# Configure settings")}`);
+  console.log(`  ${chalk.gray("comet config --api-key")}       ${chalk.gray("# Change your API key")}`);
   console.log(`  ${chalk.gray("comet history --search fix")}   ${chalk.gray("# Search commit history")}`);
   console.log("");
 }
@@ -138,9 +139,13 @@ program
 program
   .command("config")
   .description("Configure AI Commit Generator settings")
-  .action(async () => {
+  .option(
+    "-k, --api-key [provider]",
+    "Set the API key (optionally for 'gemini' or 'openai'; defaults to current provider)"
+  )
+  .action(async (options) => {
     if (program.opts().banner !== false) showBanner();
-    await configCommand();
+    await configCommand(options);
   });
 
 program

@@ -6,8 +6,57 @@ import { AIProvider } from "../../types/config";
 import { saveApiKeyToEnv } from "../../utils/env";
 import { getModelsForProvider } from "../../constants/models";
 
-export async function configCommand(): Promise<void> {
+export interface ConfigCommandOptions {
+  apiKey?: string | boolean;
+}
+
+async function promptAndSaveApiKey(preselected?: AIProvider): Promise<void> {
+  const provider =
+    preselected ||
+    (await select<AIProvider>({
+      message: "Which provider's key do you want to set?",
+      choices: [
+        { name: "Gemini", value: "gemini" },
+        { name: "OpenAI", value: "openai" },
+      ],
+    }));
+  const keyUrl =
+    provider === "gemini"
+      ? "https://aistudio.google.com/apikey"
+      : "https://platform.openai.com/api-keys";
+  logger.info(`Get your key at: ${keyUrl}`);
+  const apiKey = await password({
+    message: `Enter your ${provider} API key:`,
+    mask: "*",
+    validate: (value: string) =>
+      value.trim().length > 0 || "API key cannot be empty",
+  });
+  saveApiKeyToEnv(provider, apiKey.trim());
+  logger.success(`${provider} API key saved!`);
+}
+
+export async function configCommand(
+  options: ConfigCommandOptions = {}
+): Promise<void> {
   const config = loadConfig();
+
+  // --api-key [provider]: jump straight to the key prompt
+  if (options.apiKey) {
+    let provider: AIProvider | undefined;
+    if (typeof options.apiKey === "string") {
+      if (options.apiKey !== "gemini" && options.apiKey !== "openai") {
+        logger.error(
+          `Invalid provider '${options.apiKey}'. Use 'gemini' or 'openai'.`
+        );
+        process.exit(1);
+      }
+      provider = options.apiKey;
+    } else {
+      provider = config.provider;
+    }
+    await promptAndSaveApiKey(provider);
+    return;
+  }
 
   const action = await select({
     message: "What would you like to do?",
@@ -53,26 +102,7 @@ export async function configCommand(): Promise<void> {
     }
 
     case "apikey": {
-      const provider = await select<AIProvider>({
-        message: "Which provider's key do you want to set?",
-        choices: [
-          { name: "Gemini", value: "gemini" },
-          { name: "OpenAI", value: "openai" },
-        ],
-      });
-      const keyUrl =
-        provider === "gemini"
-          ? "https://aistudio.google.com/apikey"
-          : "https://platform.openai.com/api-keys";
-      logger.info(`Get your key at: ${keyUrl}`);
-      const apiKey = await password({
-        message: `Enter your ${provider} API key:`,
-        mask: "*",
-        validate: (value: string) =>
-          value.trim().length > 0 || "API key cannot be empty",
-      });
-      saveApiKeyToEnv(provider, apiKey.trim());
-      logger.success(`${provider} API key saved!`);
+      await promptAndSaveApiKey();
       break;
     }
 
