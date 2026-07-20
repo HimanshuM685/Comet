@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.5 (2026-07-21)
+
+### Fixes
+- Improve JSON parsing resilience for malformed AI responses
+
 ## 1.2.4 (2026-07-21)
 
 ### Fixes
