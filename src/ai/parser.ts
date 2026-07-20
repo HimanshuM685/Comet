@@ -38,24 +38,50 @@ function tryFixTruncatedJson(text: string): any {
   return tryParseJson(fixed);
 }
 
-function extractJsonArray(raw: string): unknown[] | null {
-  const firstBracket = raw.indexOf("[");
-  const lastBracket = raw.lastIndexOf("]");
+function cleanJsonResponse(text: string): string {
+  let cleaned = text;
 
+  // Remove markdown code block markers
+  cleaned = cleaned.replace(/```(?:json)?\s*\n?/g, "");
+  cleaned = cleaned.replace(/```\s*$/gm, "");
+
+  // Remove any text before the first [ and after the last ]
+  const firstBracket = cleaned.indexOf("[");
+  const lastBracket = cleaned.lastIndexOf("]");
   if (firstBracket !== -1 && lastBracket > firstBracket) {
-    const slice = raw.substring(firstBracket, lastBracket + 1);
-    const parsed = tryParseJson(slice);
-    if (Array.isArray(parsed)) return parsed;
+    cleaned = cleaned.substring(firstBracket, lastBracket + 1);
   }
 
-  // Response might be truncated - try to fix it
-  if (firstBracket !== -1) {
-    const slice = raw.substring(firstBracket);
-    const parsed = tryFixTruncatedJson(slice);
-    if (Array.isArray(parsed)) return parsed;
+  return cleaned;
+}
+
+function tryExtractIndividualObjects(text: string): unknown[] | null {
+  const results: unknown[] = [];
+  const objectPattern = /\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g;
+  let match;
+
+  while ((match = objectPattern.exec(text)) !== null) {
+    const parsed = tryParseJson(match[0]);
+    if (parsed && typeof parsed === "object" && "message" in parsed && "type" in parsed) {
+      results.push(parsed);
+    }
   }
 
-  return null;
+  return results.length > 0 ? results : null;
+}
+
+function extractJsonArray(raw: string): unknown[] | null {
+  // First try to clean the response and parse as-is
+  const cleaned = cleanJsonResponse(raw);
+  const parsed = tryParseJson(cleaned);
+  if (Array.isArray(parsed)) return parsed;
+
+  // Try fixing truncated JSON
+  const fixed = tryFixTruncatedJson(cleaned);
+  if (Array.isArray(fixed)) return fixed;
+
+  // Last resort: try to extract individual JSON objects
+  return tryExtractIndividualObjects(raw);
 }
 
 function extractJsonObject(raw: string): Record<string, any> | null {
