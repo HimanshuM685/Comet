@@ -19,7 +19,7 @@ export const PROMPTS = {
 1. Use Conventional Commits format: type(scope): description
 2. Maximum {max_length} characters for the subject line
 3. Use imperative mood (add, fix, remove, not added, fixed, removed)
-4. If the project uses emojis, include the appropriate emoji prefix
+4. Do not include any emoji prefixes in commit messages
 5. Be specific and descriptive
 6. Focus on the "what" and "why", not the "how"
 7. Write the messages in this language: {language}
