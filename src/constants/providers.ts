@@ -44,7 +44,7 @@ export const PROVIDERS: Record<AIProvider, ProviderInfo> = {
     defaultModel: "meta/llama-3.3-70b-instruct",
   },
   custom: {
-    label: "Custom (OpenAI-compatible)",
+    label: "Custom (any endpoint)",
     envVar: "CUSTOM_API_KEY",
     defaultModel: "",
   },

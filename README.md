@@ -75,15 +75,20 @@ comet --push
 | `comet --push` | Commit and push to remote |
 | `comet --dry-run` | Show suggestions without committing |
 | `comet -m "msg"` | Skip selection, use provided message |
+| `comet --choose-model` | Pick a model interactively — list fetched live from your provider's API |
 | `comet review` | AI code review of staged changes |
 | `comet explain` | Explain staged changes in plain English |
 | `comet refactor` | Get AI refactoring suggestions |
-| `comet config` | Configure settings |
+| `comet config` | Configure settings (interactive menu) |
 | `comet config --provider <name>` | Connect/switch AI provider (`gemini`/`openai`/`claude`/`openrouter`/`nim`/`custom`) |
 | `comet config --api-key [provider]` | Set/change an API key for any provider |
 | `comet history` | View and search commit history |
 | `comet history -s <query>` | Search commit history |
 | `comet history --clear` | Clear commit history |
+| `comet help` | Show help message |
+| `comet --version` | Show installed version |
+
+`review`, `explain`, and `refactor` also accept `--provider <name>` and `--model <name>`.
 
 ### Options
 
@@ -222,6 +227,17 @@ npm run dev
 | `npm test` | Run tests |
 | `npm run lint` | Lint source files |
 | `npm run typecheck` | Type-check without emitting |
+
+---
+
+## Contributors
+
+| Name | GitHub |
+|------|--------|
+| **Koushik Mondal** — author & maintainer | [@Koushikmondal06](https://github.com/Koushikmondal06) |
+| **Himanshu Malik** — multi-provider support (Claude, OpenRouter, NVIDIA NIM, custom endpoints) | — |
+
+Contributions welcome — open an issue or PR at [Koushikmondal06/Comet](https://github.com/Koushikmondal06/Comet).
 
 ---
 
