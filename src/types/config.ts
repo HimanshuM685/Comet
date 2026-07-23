@@ -3,6 +3,7 @@ export type AIProvider =
   | "openai"
   | "claude"
   | "openrouter"
+  | "groq"
   | "nim"
   | "custom";
 

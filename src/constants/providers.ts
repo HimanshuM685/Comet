@@ -36,6 +36,13 @@ export const PROVIDERS: Record<AIProvider, ProviderInfo> = {
     baseUrl: "https://openrouter.ai/api/v1",
     defaultModel: "openai/gpt-4o-mini",
   },
+  groq: {
+    label: "Groq",
+    envVar: "GROQ_API_KEY",
+    keyUrl: "https://console.groq.com/keys",
+    baseUrl: "https://api.groq.com/openai/v1",
+    defaultModel: "llama-3.3-70b-versatile",
+  },
   nim: {
     label: "NVIDIA NIM",
     envVar: "NVIDIA_API_KEY",

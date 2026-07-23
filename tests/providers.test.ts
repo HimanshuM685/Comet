@@ -42,6 +42,7 @@ describe("getModelsForProvider", () => {
   it("returns static lists for known providers and [] for custom", () => {
     expect(getModelsForProvider("claude").length).toBeGreaterThan(0);
     expect(getModelsForProvider("openrouter").length).toBeGreaterThan(0);
+    expect(getModelsForProvider("groq").length).toBeGreaterThan(0);
     expect(getModelsForProvider("nim").length).toBeGreaterThan(0);
     expect(getModelsForProvider("custom")).toEqual([]);
   });

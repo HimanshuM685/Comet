@@ -42,6 +42,7 @@ export async function generateAIResponse(
       return generateWithOpenAI(prompt, model, "custom");
     case "openai":
     case "openrouter":
+    case "groq":
     case "nim":
       return generateWithOpenAI(prompt, model, effectiveProvider);
     default:
